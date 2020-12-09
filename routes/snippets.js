@@ -9,7 +9,7 @@ var Snippet = require('../models/snippet');
  * Get all uploaded snippets, from newest to latest.
  */
 router.get('/get', (req, res, next) => {
-    Snippet.find({}).sort('-date').exec((err, docs) => {
+    Snippet.find({}).sort('-date').populate('creator', '_id username').exec((err, docs) => {
         if (err) return next(err);
 
         res.send(docs);
@@ -20,7 +20,7 @@ router.get('/get', (req, res, next) => {
  * Get a single snippet by its ID.
  */
 router.get('/get/:id', (req, res, next) => {
-    Snippet.findById(req.params.id, (err, doc) => {
+    Snippet.findById(req.params.id).populate('creator', '_id username').exec((err, doc) => {
         if (err) return next(err);
 
         res.send(doc);

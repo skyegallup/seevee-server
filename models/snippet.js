@@ -1,4 +1,3 @@
-const { ObjectID } = require('mongodb');
 var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
@@ -6,7 +5,7 @@ var Schema = mongoose.Schema;
 
 const Snippet = new Schema({
     name:        String,
-    creator:     ObjectID,
+    creator:     { type: Schema.Types.ObjectId, ref: 'User' },
     uploaded:    Date,
     description: String,
     content:     String,
