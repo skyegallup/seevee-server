@@ -1,5 +1,4 @@
 var express = require('express');
-var jwt = require('jsonwebtoken');
 var router = express.Router();
 
 var User = require('../models/user');
@@ -10,9 +9,16 @@ router.post('/register', (req, res, next) => {
         username: req.body.username,
         password: req.body.password,  // hashed by model pre-save
         email:    req.body.email
-    }, (err, doc) => {
+    }, (err, user) => {
         if (err) return next(err);
-        res.send(doc);
+
+        user.createToken((err, token) => {
+            if (err) return res.status(500).json(err);
+
+            res.json({
+                token: "Bearer " + token
+            });
+        });
     })
 });
 
@@ -25,11 +31,7 @@ router.post('/login', (req, res) => {
             if (err) return res.status(400).json(err);
 
             if (isMatch) {
-                const payload = {
-                    id: user.id,
-                    name: user.username,
-                };
-                jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 31556926 }, (err, token) => {
+                user.createToken((err, token) => {
                     if (err) return res.status(500).json(err);
 
                     res.json({
